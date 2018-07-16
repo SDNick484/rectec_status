@@ -1,0 +1,11 @@
+--- flask-ask-0.9.8/setup.py	2018-07-15 23:13:49.488717340 -0700
++++ flask-ask-0.9.8/setup.py	2018-07-15 23:13:05.357887408 -0700
+@@ -5,7 +5,7 @@
+ Easy Alexa Skills Kit integration for Flask
+ """
+ from setuptools import setup
+-from pip.req import parse_requirements
++from pip._internal.req import parse_requirements
+ 
+ setup(
+     name='Flask-Ask',
