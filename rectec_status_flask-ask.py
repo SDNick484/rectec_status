@@ -31,7 +31,7 @@ ask = Ask(app, "/")
 @ask.launch
 def launch():
     speech_text = 'Welcome to Rectec Status!'
-    return question(speech_text).reprompt(speech_text)
+    return question(speech_text).reprompt(speech_text).simple_card('Welcome', speech_text)
 
 # Power intent to check if RecTec is powered on
 @ask.intent('powerIntent')
@@ -40,42 +40,46 @@ def powerIntent():
     data = d.status()  
     rt_state = data['dps']['1']
     if rt_state:
-        speech_text = 'Power is on'
-        return statement(speech_text)
+        speech_text = 'Your RecTec is powered is on.'
+        return statement(speech_text).simple_card('Power', speech_text)
     else:
-        speech_text = 'Power is off'
-        return statement(speech_text)
+        speech_text = 'Your RecTec is powered is off.'
+        return statement(speech_text).simple_card('Power', speech_text)
 
 # Intent to check current temperature
 # Value is "0" if RecTec is not on
 @ask.intent('currentTemperatureIntent')
 def currentTemperatureIntent():
     d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
-    data = d.status()  
-    return statement('Current temperature is %r' % data['dps']['103'])
+    data = d.status()
+    speech_text = 'Current temperature is %r' % data['dps']['103']
+    return statement(speech_text).simple_card('Current Temp', speech_text)
 
 # Intent to check target temperature
 @ask.intent('targetTemperatureIntent')
 def targetTemperatureIntentResponse():
     d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
     data = d.status()  
-    return statement('Target temperature is %r' % data['dps']['102'])
+    speech_text = 'Target temperature is %r' % data['dps']['102']
+    return statement(speech_text).simple_card('Target Temp', speech_text)
 
 # Intent to check Probe A temperature
 # I believe it returns the value from when it was last "on"
 @ask.intent('probeATemperatureIntent')
 def probeATemperatureIntentResponse():
     d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
-    data = d.status()  
-    return statement('Probe A temperature is %r' % data['dps']['106'])
+    data = d.status()
+    speech_text = 'Probe A temperature is %r' % data['dps']['105']
+    return statement(speech_text).simple_card('Probe A Temp', speech_text)
 
 # Intent to check Probe B temperature
 # I believe it returns the value from when it was last "on"
 @ask.intent('probeBTemperatureIntent')
 def probeBTemperatureIntentResponse():
     d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
-    data = d.status()  
-    return statement('Probe B temperature is %r' % data['dps']['106'])
+    data = d.status()
+    speech_text = 'Probe B temperature is %r' % data['dps']['106']
+    return statement(speech_text).simple_card('Probe B Temp', speech_text)
 
 # Intent that pulls everything mentioned above
 @ask.intent('everythingIntent')
@@ -84,31 +88,30 @@ def everythingIntentResponse():
     data = d.status()  
     rt_state = data['dps']['1']
     if rt_state:
-        everything_text = 'Power is on'
+        everything_text = 'Your RecTec is powered is on'
     else:
-        everything_text = 'Power is off'
-    target = ', target temperature is %r' % data['dps']['102']
+        everything_text = 'Your RecTec is powered is off'
+    target = ', Target temperature is %r' % data['dps']['102']
     everything_text += target
-    current = ', current temperature is %r' % data['dps']['103']
+    current = ', Current temperature is %r' % data['dps']['103']
     everything_text += current
-    probea = ', probe A temperature is %r' % data['dps']['105']
+    probea = ', Probe A temperature is %r' % data['dps']['105']
     everything_text += probea
-    probeb = ', probe B temperature is %r' % data['dps']['106']
+    probeb = ', Probe B temperature is %r' % data['dps']['106']
     everything_text += probeb
-    return statement(everything_text)
+    return statement(everything_text).simple_card('Everything', everything_text)
 
 # To do - write built-in intents
-#@ask.intent('AMAZON.HelpIntent')
-#def help():
-#    speech_text = 'You can say hello to me!'
-#    return question(speech_text).reprompt(speech_text).simple_card('HelloWorld', speech_text)
-#    return question(speech_text).reprompt(speech_text)
+@ask.intent('AMAZON.HelpIntent')
+def help():
+    speech_text = 'You can ask me the power status, target or current temperature, or the temperature of probe A or B, or ask me to tell you everything'
+    return question(speech_text).reprompt(speech_text).simple_card('Help', speech_text)
 
 @ask.intent('AMAZON.FallbackIntent')
 def fallback():
     speech_text = "Sorry, I didn't get that."
-    question_text = "You can ask me the power status, target or current temperature, or the temperature of probe a or b"
-    return question(speech_text).reprompt(question_text)
+    question_text = "You can ask me the power status, target or current temperature, or the temperature of probe A or B, or ask me to tell you everything"
+    return question(speech_text).reprompt(question_text).simple_card('Help', question_text)
 
 # End session
 @ask.session_ended
