@@ -1,0 +1,102 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "rectec status",
+            "intents": [
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": [
+                        "what should I ask",
+                        "I need help"
+                    ]
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": [
+                        "cancel rectec status",
+                        "stop rectec status",
+                        "end rectec status",
+                        "close rectec status"
+                    ]
+                },
+                {
+                    "name": "powerIntent",
+                    "slots": [],
+                    "samples": [
+                        "ask rectec status if I am powered on",
+                        "am I turned on",
+                        "to check if my RecTec is powered on",
+                        "to check if my power is on",
+                        "if my power is on",
+                        "am I running",
+                        "am I powered on",
+                        "is my rectec powered on"
+                    ]
+                },
+                {
+                    "name": "targetTemperatureIntent",
+                    "slots": [],
+                    "samples": [
+                        "what is my set point",
+                        "ask rectec status to check my target temperature",
+                        "to check my target temperature",
+                        "my target temperature",
+                        "what temperature am I set to",
+                        "what is my target temperature"
+                    ]
+                },
+                {
+                    "name": "currentTemperatureIntent",
+                    "slots": [],
+                    "samples": [
+                        "ask rectec status to check my actual temperature",
+                        "what is my actual temperature",
+                        "ask rectec status to check my current temperature",
+                        "to check my current temperature",
+                        "my current temperature",
+                        "what is my current temperature"
+                    ]
+                },
+                {
+                    "name": "probeATemperatureIntent",
+                    "slots": [],
+                    "samples": [
+                        "what is the temperature of the first probe",
+                        "ask rectec status to check the temperature of probe A",
+                        "to check the temperature of probe A",
+                        "what is the temperature of probe A"
+                    ]
+                },
+                {
+                    "name": "probeBTemperatureIntent",
+                    "slots": [],
+                    "samples": [
+                        "what is the temperature of the second probe",
+                        "ask rectec status to check the temperature of probe B",
+                        "to check the temperature of probe B",
+                        "what is the temperature of probe B"
+                    ]
+                },
+                {
+                    "name": "everythingIntent",
+                    "slots": [],
+                    "samples": [
+                        "ask rectec status to tell me everything",
+                        "to tell me everything",
+                        "tell me everything",
+                        "what is my overall status"
+                    ]
+                }
+            ],
+            "types": []
+        }
+    }
+}
