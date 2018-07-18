@@ -1,24 +1,25 @@
 # rectec_status
-Scripts to talk to [RecTec pellet smokers](http://www.rectecgrills.com/) with WiFi controllers 
+Scripts to talk to [Rec Tec Grills pellet smokers](http://www.rectecgrills.com/) with the Rec Tec Wi-Pellet WiFi controllers.  Supported models include the  RT-340, RT-590, & RT-700 which all include the WiFi controller by default, and the RT-300 & RT-680 that are upgradable to the WiFi controller.
 
 The WiFi controllers on RecTec smokers leverage the [Tuya Smart IoT platform](https://en.tuya.com/) which can be reached over TCP or MQTT.  The scripts currently leverage [python-tuya](https://github.com/clach04/python-tuya) and communicate via TCP on port 6668 over the LAN.  Through additional exploration and collaboration, I'd like to expand the scripts to support remote access via MQTT.
 
 ### Device Information
-Details of what's possible with the RecTec are still being discovered.  The device returns JSON output such as:
+JSON schema has been posted, a quick summary is below:
 ```
 {
     "devId": "##################", \\ 20 character device ID, not clear if its unique or same for all RecTecs
     "dps": {
-        "1": false,   \\ bool, True if on, False if off
-        "102": 275,   \\ number, "Target" temperature
-        "103": 0,     \\ number, "Current" temperature
-        "104": 60,    \\ number, minimum feed rate, 60 = 6.0%
-        "105": 112,   \\ number, "Probe A" temperature
-        "106": 107,   \\ number, "Probe B" temperature
-        "107": 0,     \\ number, unknown
-        "109": false, \\ bool, unknown
-        "110": false, \\ bool, unknown
-        "111": false  \\ bool, unknown
+        "1": false,   \\ "Power", bool, rw, True if on, False if off
+        "102": 275,   \\ "Set_temp", number, rw, Target ("Set Point") temperature
+        "103": 0,     \\ "Actual_temp", number, ro, Current ("Actual") temperature
+        "104": 60,    \\ "Min_Feedrate", number, rw, Minimum feeding amount, 60 = 6.0%
+        "105": 112,   \\ "Food_temp1", number, ro, "Probe A" temperature
+        "106": 107,   \\ "Food_temp2", number, ro, "Probe B" temperature
+        "107": 0,     \\ "Temp_adjust", number, rw, "Temperature Calibration" 
+        "108": false, \\ "Temp_unit", bool, ro, unavailable
+        "109": false, \\ "ER1_alarm", bool, ro
+        "110": false, \\ "ER2_alarm", bool, ro
+        "111": false  \\ "ER3_alarm", bool, ro
     }
 }
 ```
