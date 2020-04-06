@@ -1,6 +1,4 @@
 """
-Modified version of switch.py from https://github.com/mileperhour/localtuya-homeassistant/tree/master/custom_components/localtuya
-
 Simple platform to control **SOME** Tuya switch devices.
 
 For more details about this platform, please refer to the documentation at
@@ -11,6 +9,7 @@ from homeassistant.components.switch import SwitchDevice, PLATFORM_SCHEMA
 from homeassistant.const import (CONF_NAME, CONF_HOST, CONF_ID, CONF_SWITCHES, CONF_FRIENDLY_NAME, CONF_ICON)
 import homeassistant.helpers.config_validation as cv
 from time import time
+from time import sleep
 from threading import Lock
 
 REQUIREMENTS = ['pytuya==7.0.4']
@@ -20,9 +19,15 @@ CONF_LOCAL_KEY = 'local_key'
 
 DEFAULT_ID = '1'
 
+#ATTR_CURRENT = 'current'
+#ATTR_CURRENT_CONSUMPTION = 'current_consumption'
+#ATTR_VOLTAGE = 'voltage'
+
+ATTR_TARGET = 'target'
 ATTR_CURRENT = 'current'
-ATTR_CURRENT_CONSUMPTION = 'current_consumption'
-ATTR_VOLTAGE = 'voltage'
+ATTR_PROBEA = 'probea'
+ATTR_PROBEB = 'probeb'
+
 
 SWITCH_SCHEMA = vol.Schema({
     vol.Optional(CONF_ID, default=DEFAULT_ID): cv.string,
@@ -43,6 +48,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up of the Tuya switch."""
+#    import pytuya
     from . import pytuya
 
     devices = config.get(CONF_SWITCHES)
@@ -110,6 +116,7 @@ class TuyaCache:
         try:
             now = time()
             if not self._cached_status or now - self._cached_status_time > 20:
+                sleep(0.5)
                 self._cached_status = self.__get_status()
                 self._cached_status_time = time()
             return self._cached_status
@@ -142,9 +149,10 @@ class TuyaDevice(SwitchDevice):
     def device_state_attributes(self):
         attrs = {}
         try:
-            attrs[ATTR_CURRENT] = "{}".format(self._status['dps']['104'])
-            attrs[ATTR_CURRENT_CONSUMPTION] = "{}".format(self._status['dps']['105']/10)
-            attrs[ATTR_VOLTAGE] = "{}".format(self._status['dps']['106']/10)
+            attrs[ATTR_TARGET] = "{}".format(self._status['dps']['102'])
+            attrs[ATTR_CURRENT] = "{}".format(self._status['dps']['103'])
+            attrs[ATTR_PROBEA] = "{}".format(self._status['dps']['105'])
+            attrs[ATTR_PROBEB] = "{}".format(self._status['dps']['106'])
         except KeyError:
             pass
         return attrs
