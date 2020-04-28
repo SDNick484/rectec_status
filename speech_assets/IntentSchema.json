@@ -2,6 +2,11 @@
     "interactionModel": {
         "languageModel": {
             "invocationName": "rectec status",
+            "modelConfiguration": {
+                "fallbackIntentSensitivity": {
+                    "level": "LOW"
+                }
+            },
             "intents": [
                 {
                     "name": "AMAZON.FallbackIntent",
@@ -94,6 +99,39 @@
                         "tell me everything",
                         "what is my overall status"
                     ]
+                },
+                {
+                    "name": "turnOnIntent",
+                    "slots": [],
+                    "samples": [
+                        "Ask rectec status to start my Rectec",
+                        "Start my smoker",
+                        "Start my rectec",
+                        "Start my grill",
+                        "Ask rectec status to power my Rectec on",
+                        "Power on",
+                        "Turn on",
+                        "Turn on my smoker",
+                        "Turn on my grill",
+                        "Ask rectec status to turn my Rectec on"
+                    ]
+                },
+                {
+                    "name": "turnOffIntent",
+                    "slots": [],
+                    "samples": [
+                        "Shuw down my smoker",
+                        "Power off my grill",
+                        "Power off my rectec",
+                        "Turn off my Rectec",
+                        "Turn off my smoker",
+                        "Turn off my grill",
+                        "Ask Rectec Status to turn off my grill"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
                 }
             ],
             "types": []
