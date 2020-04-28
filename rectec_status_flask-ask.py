@@ -4,15 +4,17 @@
 #
 # This script requires the following variables which can be found 
 # with the device discover script on above GitHub site:
-# XXXXXXXXXXXXXXXXXXXX = gwID (also known as devID)
-# YYY.YYY.YYY.YYY = IP address of smoker
-# ZZZZZZZZZZZZZZZZ = productKey, does not need to be real value
+# GW_ID = gwID (also known as devID)
+# LOCAL_IP = IP address of smoker
+# LOCAL_KEY = productKey, does not need to be real value
 #
 
 import logging
 import os
-
 import pytuya
+import time
+
+import rt_function as rt
 
 from flask import Flask
 from flask_ask import Ask, request, session, question, statement
@@ -23,7 +25,7 @@ ask = Ask(app, "/")
 
 # I originally was only polling data at start-up, need to eventually move it to a function
 #def getRecTecInfo():
-#    d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
+#    d = pytuya.OutletDevice('GW_ID', 'LOCAL_IP', 'LOCAL_KEY')
 #    data = d.status()
 
 
@@ -36,68 +38,84 @@ def launch():
 # Power intent to check if RecTec is powered on
 @ask.intent('powerIntent')
 def powerIntent():
-    d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
-    data = d.status()  
-    rt_state = data['dps']['1']
-    if rt_state:
-        speech_text = 'Your RecTec is powered is on.'
+    rt_state = rt.get_status()
+    if rt_state['dps']['1']:
+        speech_text = 'Your RecTec is powered on.'
         return statement(speech_text).simple_card('Power', speech_text)
     else:
-        speech_text = 'Your RecTec is powered is off.'
+        speech_text = 'Your RecTec is powered off.'
+        return statement(speech_text).simple_card('Power', speech_text)
+
+@ask.intent('turnOnIntent')
+def turnOnIntent():
+    rt.turn_on()
+    time.sleep(1)
+    rt_state = rt.get_status()
+    if rt_state['dps']['1']:
+        speech_text = 'Your RecTec is now powered on.'
+        return statement(speech_text).simple_card('Power', speech_text)
+    else:
+        speech_text = 'Unable to turn your RecTec on.'
+        return statement(speech_text).simple_card('Power', speech_text)
+
+@ask.intent('turnOffIntent')
+def turnOffIntent():
+    rt.turn_off()
+    time.sleep(1)
+    rt_state = rt.get_status()
+    if not rt_state['dps']['1']:
+        speech_text = 'Your RecTec is now powered off.'
+        return statement(speech_text).simple_card('Power', speech_text)
+    else:
+        speech_text = 'Unable to turn your RecTec off.'
         return statement(speech_text).simple_card('Power', speech_text)
 
 # Intent to check current temperature
 # Value is "0" if RecTec is not on
 @ask.intent('currentTemperatureIntent')
 def currentTemperatureIntent():
-    d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
-    data = d.status()
-    speech_text = 'Current temperature is %r' % data['dps']['103']
+    rt_state = rt.get_status()
+    speech_text = 'Current temperature is %r' % rt_state['dps']['103']
     return statement(speech_text).simple_card('Current Temp', speech_text)
 
 # Intent to check target temperature
 @ask.intent('targetTemperatureIntent')
 def targetTemperatureIntentResponse():
-    d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
-    data = d.status()  
-    speech_text = 'Target temperature is %r' % data['dps']['102']
+    rt_state = rt.get_status()
+    speech_text = 'Target temperature is %r' % rt_state['dps']['102']
     return statement(speech_text).simple_card('Target Temp', speech_text)
 
 # Intent to check Probe A temperature
 # I believe it returns the value from when it was last "on"
 @ask.intent('probeATemperatureIntent')
 def probeATemperatureIntentResponse():
-    d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
-    data = d.status()
-    speech_text = 'Probe A temperature is %r' % data['dps']['105']
+    rt_state = rt.get_status()
+    speech_text = 'Probe A temperature is %r' % rt_state['dps']['105']
     return statement(speech_text).simple_card('Probe A Temp', speech_text)
 
 # Intent to check Probe B temperature
 # I believe it returns the value from when it was last "on"
 @ask.intent('probeBTemperatureIntent')
 def probeBTemperatureIntentResponse():
-    d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
-    data = d.status()
-    speech_text = 'Probe B temperature is %r' % data['dps']['106']
+    rt_state = rt.get_status()
+    speech_text = 'Probe B temperature is %r' % rt_state['dps']['106']
     return statement(speech_text).simple_card('Probe B Temp', speech_text)
 
 # Intent that pulls everything mentioned above
 @ask.intent('everythingIntent')
 def everythingIntentResponse():
-    d = pytuya.OutletDevice('XXXXXXXXXXXXXXXXXXXX', 'YYY.YYY.YYY.YYY', 'ZZZZZZZZZZZZZZZZ')
-    data = d.status()  
-    rt_state = data['dps']['1']
-    if rt_state:
-        everything_text = 'Your RecTec is powered is on'
+    rt_state = rt.get_status()
+    if rt_state['dps']['1']:
+        everything_text = 'Your RecTec is powered on'
     else:
-        everything_text = 'Your RecTec is powered is off'
-    target = ', Target temperature is %r' % data['dps']['102']
+        everything_text = 'Your RecTec is powered off'
+    target = ', Target temperature is %r' % rt_state['dps']['102']
     everything_text += target
-    current = ', Current temperature is %r' % data['dps']['103']
+    current = ', Current temperature is %r' % rt_state['dps']['103']
     everything_text += current
-    probea = ', Probe A temperature is %r' % data['dps']['105']
+    probea = ', Probe A temperature is %r' % rt_state['dps']['105']
     everything_text += probea
-    probeb = ', Probe B temperature is %r' % data['dps']['106']
+    probeb = ', Probe B temperature is %r' % rt_state['dps']['106']
     everything_text += probeb
     return statement(everything_text).simple_card('Everything', everything_text)
 
