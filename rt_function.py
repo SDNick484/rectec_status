@@ -61,6 +61,22 @@ def turn_off(**kwargs):
             if i+1 == 3:
                 raise ConnectionError("Failed to turn off the smoker.")
 
+def set_temp(temp):
+    rt_state = get_status()
+    if not rt_state['dps']['1']:
+        print("\nPlease first turn the smoker on to set a temperature.")
+        return()
+    for i in range(3):
+        try:
+            d.set_status(temp, 102)
+            time.sleep(1)
+            print("\nTemperature set successfully!\n")
+            print_status()
+            return()
+        except ConnectionError:
+            if i+1 == 3:
+                raise ConnectionError("Failed to set the temperature on the smoker.")
+
 def main():
     done = False
     while not done:
@@ -68,6 +84,7 @@ def main():
         print("B. Turn off the smoker.")
         print("C. Check if the smoker is on.")
         print("D. Check the current temperatures.")
+        print("S. Set target temperature.")
         print("Q. Quit")
         print("\n")
         user_choice = input("How would you like to proceed? ")
@@ -75,6 +92,13 @@ def main():
         if user_choice.upper() == "Q": # Quit
             print("\n")
             done = True
+        elif user_choice.upper() == "S": # Set Temp
+            print("\n")
+            temp = int(input("Please specify a target temperature between 180 - 600 \N{DEGREE SIGN}F or 0 to return: "))
+            if not temp == 0:
+                set_temp(temp)
+            else:
+                print("\n")
         elif user_choice.upper() == "D": # Status
             print("\n")
             print_status()
