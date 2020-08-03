@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-PYTHON_COMPAT=( python{2_7,3_{6,7}} )
+PYTHON_COMPAT=( python3_7 )
 
 inherit distutils-r1
 
@@ -22,12 +22,15 @@ RDEPEND="
 	>=dev-python/flask-0.3[${PYTHON_USEDEP}]
 	doc? ( dev-python/sphinx[${PYTHON_USEDEP}] )
 	dev-python/aniso8601
-	<=dev-python/werkzeug-0.16.1"
+	<=dev-python/werkzeug-0.16.1
+	dev-python/six
+	dev-python/pyyaml
+	dev-python/pyopenssl"
 DEPEND="${RDEPEND}
 	dev-python/pyyaml[${PYTHON_USEDEP}]
 	dev-python/setuptools[${PYTHON_USEDEP}]"
 
-PATCHES=( "${FILESDIR}"/${P}-setup.patch )
+PATCHES=( "${FILESDIR}"/${P}-setup-r1.patch )
 
 S="${WORKDIR}/${MY_P}"
 
